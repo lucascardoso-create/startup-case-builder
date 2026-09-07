@@ -130,6 +130,7 @@ function Painel() {
           finalizada: entrega.finalizada,
           enviada_em: entrega.enviada_em,
         });
+        if (!entrega.arquivo_path && entrega.link_complementar.trim()) setModo("texto");
         if (entrega.finalizada) setConfirmado(CONFIRMACOES.map(() => true));
       }
       setCarregando(false);
@@ -149,7 +150,7 @@ function Painel() {
     if (form.usou_ia === true && !form.ia_detalhes.trim())
       itens.push("Detalhes sobre o uso de inteligência artificial");
     if (!form.link_complementar.trim() && !form.arquivo_path)
-      itens.push("Módulo 2 — envie um arquivo ou informe um link");
+      itens.push("Módulo 2 — envie um arquivo ou escreva um complemento");
     return itens;
   }, [form]);
 
@@ -205,8 +206,8 @@ function Painel() {
       toast.error("Envie um arquivo PDF ou PPTX.");
       return;
     }
-    if (file.size > 20 * 1024 * 1024) {
-      toast.error("O arquivo precisa ter até 20 MB.");
+    if (file.size > 50 * 1024 * 1024) {
+      toast.error("O arquivo precisa ter até 50 MB.");
       return;
     }
     setSubindo(true);
