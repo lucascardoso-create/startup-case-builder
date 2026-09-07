@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, FileText, FolderOpen, Sparkles, Clock } from "lucide-react";
+import { ArrowRight, FolderOpen, Clock } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import mascote from "@/assets/mascote.png";
+import logoAsset from "@/assets/ilab-logo.png.asset.json";
 import { DRIVE_URL, PRAZO_LABEL, CONTATO } from "@/lib/case";
 
 export const Route = createFileRoute("/")({
@@ -33,9 +33,13 @@ function Landing() {
     <main className="min-h-screen bg-background text-foreground">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <div className="flex items-center gap-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Sparkles className="h-5 w-5" />
-          </span>
+          <img
+            src={logoAsset.url}
+            alt="SanFran iLab"
+            width={830}
+            height={1233}
+            className="h-10 w-auto"
+          />
           <div className="leading-tight">
             <p className="font-display text-lg">SanFran iLab</p>
             <p className="text-xs text-muted-foreground">Escola de Startups Jurídicas da USP</p>
