@@ -145,3 +145,25 @@
     color: var(--color-foreground);
   }
 }
+
+@theme inline {
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+}
+
+@utility blob-top {
+  background-image: radial-gradient(120% 100% at 0% 0%, var(--primary) 0 42%, transparent 42.5%);
+}
