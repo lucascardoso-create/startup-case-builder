@@ -94,6 +94,7 @@ function Painel() {
   const [subindo, setSubindo] = useState(false);
   const [form, setForm] = useState<Respostas>(VAZIO);
   const [confirmado, setConfirmado] = useState<boolean[]>(CONFIRMACOES.map(() => false));
+  const [modo, setModo] = useState<"arquivo" | "texto">("arquivo");
 
   const prazoEncerrado = Date.now() > PRAZO.getTime();
   const bloqueado = prazoEncerrado;
@@ -129,6 +130,7 @@ function Painel() {
           finalizada: entrega.finalizada,
           enviada_em: entrega.enviada_em,
         });
+        if (!entrega.arquivo_path && entrega.link_complementar.trim()) setModo("texto");
         if (entrega.finalizada) setConfirmado(CONFIRMACOES.map(() => true));
       }
       setCarregando(false);
@@ -148,7 +150,7 @@ function Painel() {
     if (form.usou_ia === true && !form.ia_detalhes.trim())
       itens.push("Detalhes sobre o uso de inteligência artificial");
     if (!form.link_complementar.trim() && !form.arquivo_path)
-      itens.push("Módulo 2 — envie um arquivo ou informe um link");
+      itens.push("Módulo 2 — envie um arquivo ou escreva um complemento");
     return itens;
   }, [form]);
 
@@ -204,8 +206,8 @@ function Painel() {
       toast.error("Envie um arquivo PDF ou PPTX.");
       return;
     }
-    if (file.size > 20 * 1024 * 1024) {
-      toast.error("O arquivo precisa ter até 20 MB.");
+    if (file.size > 50 * 1024 * 1024) {
+      toast.error("O arquivo precisa ter até 50 MB.");
       return;
     }
     setSubindo(true);
@@ -410,83 +412,110 @@ function Painel() {
             <h2 className="text-2xl uppercase">Material complementar</h2>
           </div>
           <p className="mt-2 text-sm text-muted-foreground">
-            Obrigatório enviar pelo menos um dos dois: arquivo ou link. Pode enviar os dois. Serve
-            para demonstrar ou explicar visualmente sua ideia e comprovar suas habilidades.
+            Escolha uma forma de complementar sua entrega: envie um arquivo ou escreva um
+            complemento em texto. Basta uma das duas.
           </p>
 
-          <div className="mt-6 grid gap-5 md:grid-cols-2">
-            <div className="rounded-2xl border border-border bg-card p-6">
-              <h3 className="text-lg">Arquivo (opcional)</h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                PDF ou PPTX, até 7 páginas/slides e 20 MB.
-              </p>
-              {form.arquivo_nome ? (
-                <div className="mt-4 flex items-center gap-2 rounded-xl bg-secondary p-3 text-sm">
-                  <Paperclip className="h-4 w-4 shrink-0" />
-                  <span className="min-w-0 flex-1 truncate">{form.arquivo_nome}</span>
-                  <Button size="icon" variant="ghost" onClick={baixarArquivo} title="Abrir">
-                    <Download className="h-4 w-4" />
-                  </Button>
-                  {!bloqueado && (
-                    <Button size="icon" variant="ghost" onClick={removerArquivo} title="Remover">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              ) : (
-                <p className="mt-4 text-sm text-muted-foreground">Nenhum arquivo enviado ainda.</p>
-              )}
-              <input
-                ref={inputArquivo}
-                type="file"
-                accept=".pdf,.pptx"
-                className="hidden"
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) enviarArquivo(f);
-                }}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                className="mt-4"
-                disabled={bloqueado || subindo}
-                onClick={() => inputArquivo.current?.click()}
-              >
-                {subindo ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    <Paperclip className="mr-1 h-4 w-4" />
-                    {form.arquivo_nome ? "Substituir arquivo" : "Escolher arquivo"}
-                  </>
-                )}
-              </Button>
+          <div className="mt-6 rounded-2xl border border-border bg-card p-6">
+            <div className="inline-flex rounded-xl bg-secondary p-1">
+              {[
+                { v: "arquivo" as const, label: "Enviar arquivo" },
+                { v: "texto" as const, label: "Escrever complemento" },
+              ].map((o) => (
+                <button
+                  key={o.v}
+                  type="button"
+                  disabled={bloqueado}
+                  onClick={() => setModo(o.v)}
+                  className={`rounded-lg px-4 py-2 text-sm transition-colors ${
+                    modo === o.v
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {o.label}
+                </button>
+              ))}
             </div>
 
-            <div className="rounded-2xl border border-border bg-card p-6">
-              <h3 className="text-lg">Link (opcional)</h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Google Slides, Canva, Figma, vídeo, site, protótipo ou repositório no GitHub.
-              </p>
-              <Input
-                className="mt-4"
-                type="url"
-                inputMode="url"
-                maxLength={500}
-                disabled={bloqueado}
-                value={form.link_complementar}
-                onChange={(e) => setForm((f) => ({ ...f, link_complementar: e.target.value }))}
-                placeholder="https://..."
-              />
-              <p className="mt-3 flex items-start gap-2 rounded-lg bg-accent p-3 text-xs text-accent-foreground">
-                <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                Confira se o link está liberado para visualização por qualquer pessoa. Links
-                privados não poderão ser avaliados.
-              </p>
-            </div>
+            {modo === "arquivo" ? (
+              <div className="mt-6">
+                <p className="text-sm text-muted-foreground">
+                  PDF ou PPTX, até 7 páginas/slides e 50 MB.
+                </p>
+                {form.arquivo_nome ? (
+                  <div className="mt-4 flex items-center gap-2 rounded-xl bg-secondary p-3 text-sm">
+                    <Paperclip className="h-4 w-4 shrink-0" />
+                    <span className="min-w-0 flex-1 truncate">{form.arquivo_nome}</span>
+                    <Button size="icon" variant="ghost" onClick={baixarArquivo} title="Abrir">
+                      <Download className="h-4 w-4" />
+                    </Button>
+                    {!bloqueado && (
+                      <Button size="icon" variant="ghost" onClick={removerArquivo} title="Remover">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <p className="mt-4 text-sm text-muted-foreground">
+                    Nenhum arquivo enviado ainda.
+                  </p>
+                )}
+                <input
+                  ref={inputArquivo}
+                  type="file"
+                  accept=".pdf,.pptx"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) enviarArquivo(f);
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-4"
+                  disabled={bloqueado || subindo}
+                  onClick={() => inputArquivo.current?.click()}
+                >
+                  {subindo ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Paperclip className="mr-1 h-4 w-4" />
+                      {form.arquivo_nome ? "Substituir arquivo" : "Escolher arquivo"}
+                    </>
+                  )}
+                </Button>
+              </div>
+            ) : (
+              <div className="mt-6">
+                <Label htmlFor="complemento">
+                  Escreva aqui algo que você não teve oportunidade de dizer nas respostas. Pode
+                  incluir links (apresentação, protótipo, vídeo, GitHub).
+                </Label>
+                <Textarea
+                  id="complemento"
+                  className="mt-2 min-h-40"
+                  maxLength={3000}
+                  disabled={bloqueado}
+                  value={form.link_complementar}
+                  onChange={(e) => setForm((f) => ({ ...f, link_complementar: e.target.value }))}
+                  placeholder="Escreva seu complemento ou cole um link..."
+                />
+                <p className="mt-2 text-right text-xs text-muted-foreground">
+                  {form.link_complementar.length} / 3000 caracteres
+                </p>
+                <p className="mt-3 flex items-start gap-2 rounded-lg bg-accent p-3 text-xs text-accent-foreground">
+                  <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                  Se incluir links, confira se estão liberados para visualização por qualquer
+                  pessoa. Links privados não poderão ser avaliados.
+                </p>
+              </div>
+            )}
           </div>
         </section>
+
 
         {/* CONFIRMAÇÕES */}
         <section className="mt-10 rounded-2xl border border-border bg-card p-6">
