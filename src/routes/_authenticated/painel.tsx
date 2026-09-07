@@ -497,7 +497,7 @@ function Painel() {
                 <Checkbox
                   className="mt-0.5"
                   disabled={bloqueado}
-                  checked={confirmado[i]}
+                  checked={confirmado[i] ?? false}
                   onCheckedChange={(v) =>
                     setConfirmado((atual) => atual.map((x, j) => (j === i ? v === true : x)))
                   }
