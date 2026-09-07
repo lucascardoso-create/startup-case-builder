@@ -66,7 +66,7 @@ export const PERGUNTAS: Pergunta[] = [
 
 export const CONFIRMACOES = [
   "Li e revisei minhas respostas.",
-  "Testei o acesso ao link complementar, se informado.",
   "Confirmo que sou responsável pela entrega e pelas fontes utilizadas.",
   `Entendo que poderei revisar minha entrega até ${PRAZO_LABEL} e que depois disso ela não poderá mais ser alterada.`,
 ];
+

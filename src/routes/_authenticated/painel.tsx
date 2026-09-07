@@ -491,6 +491,15 @@ function Painel() {
         {/* CONFIRMAÇÕES */}
         <section className="mt-10 rounded-2xl border border-border bg-card p-6">
           <h2 className="text-xl uppercase">Antes de registrar</h2>
+          <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl bg-secondary p-3 text-sm font-medium">
+            <Checkbox
+              className="mt-0.5"
+              disabled={bloqueado}
+              checked={confirmado.every(Boolean)}
+              onCheckedChange={(v) => setConfirmado(CONFIRMACOES.map(() => v === true))}
+            />
+            <span>Marcar todas as confirmações</span>
+          </label>
           <div className="mt-4 space-y-3">
             {CONFIRMACOES.map((c, i) => (
               <label key={c} className="flex cursor-pointer items-start gap-3 text-sm">
@@ -506,6 +515,7 @@ function Painel() {
               </label>
             ))}
           </div>
+
 
           {faltando.length > 0 && (
             <div className="mt-5 rounded-xl bg-secondary p-4 text-sm">
