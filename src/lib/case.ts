@@ -3,10 +3,10 @@ export const DRIVE_URL =
 
 export const CONTATO = "lucascardososilva@usp.br";
 
-/** Prazo final para edições: 14/09/2026, 23h59 (horário de Brasília). */
-export const PRAZO = new Date("2026-09-15T02:59:00Z");
+/** Prazo final para edições: 20/09/2026, 23h59 (horário de Brasília). */
+export const PRAZO = new Date("2026-09-21T02:59:00Z");
 
-export const PRAZO_LABEL = "14/09/2026, 23h59";
+export const PRAZO_LABEL = "20/09/2026, 23h59";
 
 export type Pergunta = {
   id: "q1" | "q2" | "q3" | "q4" | "q5";

@@ -4,6 +4,8 @@ import { ArrowRight, FolderOpen, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/ilab-logo.png.asset.json";
 import { DRIVE_URL, PRAZO_LABEL, CONTATO } from "@/lib/case";
+import { BarraContagem } from "@/components/contagem-regressiva";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -31,6 +33,8 @@ export const Route = createFileRoute("/")({
 function Landing() {
   return (
     <main className="min-h-screen bg-background text-foreground">
+      <BarraContagem />
+
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <div className="flex items-center gap-3">
           <img
