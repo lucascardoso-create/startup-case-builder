@@ -318,12 +318,13 @@ function Painel() {
 
         {/* MÓDULO 1 */}
         <section className="mt-10">
-          <div className="flex items-baseline gap-3">
+          <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
             <span className="rounded-md bg-foreground px-2 py-1 font-display text-xs uppercase text-background">
               Módulo 1
             </span>
-            <h2 className="text-2xl uppercase">Perguntas do case</h2>
+            <h2 className="text-xl uppercase sm:text-2xl">Perguntas do case</h2>
           </div>
+
           <p className="mt-2 text-sm text-muted-foreground">
             Todas as perguntas são obrigatórias. O formulário é a resposta principal.
           </p>
@@ -333,7 +334,7 @@ function Painel() {
               const valor = form[p.id];
               const excedeu = valor.length > p.limite;
               return (
-                <div key={p.id} className="rounded-2xl border border-border bg-card p-6">
+                <div key={p.id} className="rounded-2xl border border-border bg-card p-4 sm:p-6">
                   <p className="text-xs font-bold uppercase tracking-wide text-primary">
                     Pergunta {i + 1} — {p.etapa}
                   </p>
