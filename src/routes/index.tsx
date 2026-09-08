@@ -102,9 +102,10 @@ function Landing() {
       </section>
 
 
-      <section className="bg-secondary/60 py-16">
-        <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-3xl uppercase">O desafio</h2>
+      <section className="bg-secondary/60 py-12 sm:py-16">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 className="text-2xl uppercase sm:text-3xl">O desafio</h2>
+
           <p className="mt-3 max-w-3xl text-muted-foreground">
             Você não precisa saber programar nem conhecer modelos de negócios. Queremos compreender
             como você observa um problema, constrói uma hipótese que pode ser testada e imagina uma
@@ -129,11 +130,11 @@ function Landing() {
                 d: "Envie um PDF/PPTX e/ou um link com material que aprofunde sua análise.",
               },
             ].map((c) => (
-              <div key={c.n} className="rounded-2xl border border-border bg-card p-6">
+              <div key={c.n} className="rounded-2xl border border-border bg-card p-5 sm:p-6">
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary font-display text-primary-foreground">
                   {c.n}
                 </span>
-                <h3 className="mt-4 text-xl">{c.t}</h3>
+                <h3 className="mt-4 text-lg sm:text-xl">{c.t}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{c.d}</p>
               </div>
             ))}
@@ -141,21 +142,22 @@ function Landing() {
         </div>
       </section>
 
-      <section className="py-16">
-        <div className="mx-auto max-w-4xl rounded-3xl bg-primary px-8 py-12 text-center text-primary-foreground">
-          
-          <h2 className="mt-4 text-4xl uppercase">Pronto para começar?</h2>
-          <p className="mx-auto mt-3 max-w-xl opacity-90">
+      <section className="px-4 py-12 sm:px-6 sm:py-16">
+        <div className="mx-auto max-w-4xl rounded-3xl bg-primary px-5 py-10 text-center text-primary-foreground sm:px-8 sm:py-12">
+          <h2 className="text-3xl uppercase sm:text-4xl">Pronto para começar?</h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm opacity-90 sm:text-base">
             Entre com o e-mail cadastrado na inscrição e a senha que você recebeu por mensagem.
           </p>
-          <Button asChild size="lg" variant="secondary" className="mt-7">
+          <Button asChild size="lg" variant="secondary" className="mt-7 w-full sm:w-auto">
             <Link to="/entrar">Entrar e responder o case</Link>
           </Button>
         </div>
       </section>
 
-      <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
-        <p>
+
+      <footer className="border-t border-border px-4 py-8 text-center text-sm text-muted-foreground">
+        <p className="break-words">
+
           Dúvidas, troca ou perda de senha: fale diretamente com{" "}
           <a className="font-medium text-primary underline" href={`mailto:${CONTATO}`}>
             {CONTATO}
