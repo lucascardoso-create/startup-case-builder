@@ -85,11 +85,11 @@ function Landing() {
           <div className="relative flex justify-center">
             <div className="absolute inset-0 -z-10 rounded-[3rem] bg-primary/15" />
             <img
-              src={mascote}
-              alt="Mascote da SanFran iLab"
-              width={1024}
-              height={1024}
-              className="w-72 drop-shadow-xl md:w-96"
+              src={logoAsset.url}
+              alt="SanFran iLab"
+              width={830}
+              height={1233}
+              className="w-56 drop-shadow-xl md:w-72"
             />
           </div>
         </div>
@@ -136,7 +136,7 @@ function Landing() {
 
       <section className="py-16">
         <div className="mx-auto max-w-4xl rounded-3xl bg-primary px-8 py-12 text-center text-primary-foreground">
-          <FileText className="mx-auto h-8 w-8" />
+          
           <h2 className="mt-4 text-4xl uppercase">Pronto para começar?</h2>
           <p className="mx-auto mt-3 max-w-xl opacity-90">
             Entre com o e-mail cadastrado na inscrição e a senha que você recebeu por mensagem.
