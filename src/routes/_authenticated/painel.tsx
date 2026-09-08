@@ -362,8 +362,9 @@ function Painel() {
         </section>
 
         {/* USO DE IA */}
-        <section className="mt-10 rounded-2xl border border-border bg-card p-6">
-          <h2 className="text-xl uppercase">Uso de inteligência artificial</h2>
+        <section className="mt-10 rounded-2xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="text-lg uppercase sm:text-xl">Uso de inteligência artificial</h2>
+
           <p className="mt-2 text-sm text-muted-foreground">
             O uso de IA é permitido e estimulado. Você continua responsável pelas informações,
             fontes e conclusões apresentadas.
@@ -410,20 +411,21 @@ function Painel() {
 
         {/* MÓDULO 2 */}
         <section className="mt-10">
-          <div className="flex items-baseline gap-3">
+          <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
             <span className="rounded-md bg-foreground px-2 py-1 font-display text-xs uppercase text-background">
               Módulo 2
             </span>
-            <h2 className="text-2xl uppercase">Material complementar</h2>
+            <h2 className="text-xl uppercase sm:text-2xl">Material complementar</h2>
           </div>
           <p className="mt-2 text-sm text-muted-foreground">
             Escolha uma forma de complementar sua entrega: envie um arquivo ou escreva um
             complemento em texto. Basta uma das duas.
           </p>
 
-          <div className="mt-6 rounded-2xl border border-border bg-card p-6">
-            <div className="inline-flex rounded-xl bg-secondary p-1">
+          <div className="mt-6 rounded-2xl border border-border bg-card p-4 sm:p-6">
+            <div className="grid grid-cols-2 gap-1 rounded-xl bg-secondary p-1 sm:inline-flex">
               {[
+
                 { v: "arquivo" as const, label: "Enviar arquivo" },
                 { v: "texto" as const, label: "Escrever complemento" },
               ].map((o) => (
