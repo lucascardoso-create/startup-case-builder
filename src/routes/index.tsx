@@ -4,6 +4,8 @@ import { ArrowRight, FolderOpen, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/ilab-logo.png.asset.json";
 import { DRIVE_URL, PRAZO_LABEL, CONTATO } from "@/lib/case";
+import { BarraContagem } from "@/components/contagem-regressiva";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
