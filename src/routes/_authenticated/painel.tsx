@@ -262,40 +262,37 @@ function Painel() {
     <main className="min-h-screen bg-background pb-24">
       <BarraContagem />
       <header className="border-b border-border bg-card">
-        <div className="mx-auto grid max-w-4xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-4 sm:px-6">
+        <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-6 py-4">
           <div className="min-w-0">
             <p className="font-display text-base">SanFran iLab</p>
             <p className="truncate text-xs text-muted-foreground">{email}</p>
           </div>
-          <Button variant="ghost" size="sm" className="shrink-0" onClick={sair}>
+          <Button variant="ghost" size="sm" onClick={sair}>
             <LogOut className="mr-1 h-4 w-4" /> Sair
           </Button>
         </div>
       </header>
 
-      <div className="mx-auto max-w-4xl px-4 sm:px-6">
-        <section className="mt-6 rounded-3xl bg-primary p-6 text-primary-foreground sm:mt-8 sm:p-8">
-          <h1 className="text-3xl uppercase leading-none sm:text-4xl">
-            Parabéns por chegar até aqui!
-          </h1>
-          <p className="mt-3 max-w-2xl text-sm opacity-90 sm:text-base">
+      <div className="mx-auto max-w-4xl px-6">
+        <section className="mt-8 rounded-3xl bg-primary p-8 text-primary-foreground">
+          <h1 className="text-4xl uppercase leading-none">Parabéns por chegar até aqui!</h1>
+          <p className="mt-3 max-w-2xl opacity-90">
             Você está entre os aprovados para a segunda fase. Agora é hora de mostrar como você
             pensa. Você não precisa saber programar nem conhecer modelos de negócios: queremos
             compreender como você observa um problema, constrói uma hipótese testável e imagina uma
             solução possível.
           </p>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <Button asChild variant="secondary" className="w-full sm:w-auto">
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button asChild variant="secondary">
               <a href={DRIVE_URL} target="_blank" rel="noreferrer">
                 <FolderOpen className="mr-1 h-4 w-4" /> Materiais do case
               </a>
             </Button>
-            <span className="inline-flex items-center justify-center rounded-md bg-primary-foreground/15 px-3 py-2 text-sm">
+            <span className="inline-flex items-center rounded-md bg-primary-foreground/15 px-3 py-2 text-sm">
               Revisões até {PRAZO_LABEL}
             </span>
           </div>
         </section>
-
 
         {form.finalizada && (
           <div className="mt-6 flex items-start gap-3 rounded-2xl border border-primary/40 bg-accent p-5 text-accent-foreground">
@@ -318,13 +315,12 @@ function Painel() {
 
         {/* MÓDULO 1 */}
         <section className="mt-10">
-          <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
+          <div className="flex items-baseline gap-3">
             <span className="rounded-md bg-foreground px-2 py-1 font-display text-xs uppercase text-background">
               Módulo 1
             </span>
-            <h2 className="text-xl uppercase sm:text-2xl">Perguntas do case</h2>
+            <h2 className="text-2xl uppercase">Perguntas do case</h2>
           </div>
-
           <p className="mt-2 text-sm text-muted-foreground">
             Todas as perguntas são obrigatórias. O formulário é a resposta principal.
           </p>
@@ -334,7 +330,7 @@ function Painel() {
               const valor = form[p.id];
               const excedeu = valor.length > p.limite;
               return (
-                <div key={p.id} className="rounded-2xl border border-border bg-card p-4 sm:p-6">
+                <div key={p.id} className="rounded-2xl border border-border bg-card p-6">
                   <p className="text-xs font-bold uppercase tracking-wide text-primary">
                     Pergunta {i + 1} — {p.etapa}
                   </p>
@@ -362,9 +358,8 @@ function Painel() {
         </section>
 
         {/* USO DE IA */}
-        <section className="mt-10 rounded-2xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="text-lg uppercase sm:text-xl">Uso de inteligência artificial</h2>
-
+        <section className="mt-10 rounded-2xl border border-border bg-card p-6">
+          <h2 className="text-xl uppercase">Uso de inteligência artificial</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             O uso de IA é permitido e estimulado. Você continua responsável pelas informações,
             fontes e conclusões apresentadas.
@@ -411,21 +406,20 @@ function Painel() {
 
         {/* MÓDULO 2 */}
         <section className="mt-10">
-          <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
+          <div className="flex items-baseline gap-3">
             <span className="rounded-md bg-foreground px-2 py-1 font-display text-xs uppercase text-background">
               Módulo 2
             </span>
-            <h2 className="text-xl uppercase sm:text-2xl">Material complementar</h2>
+            <h2 className="text-2xl uppercase">Material complementar</h2>
           </div>
           <p className="mt-2 text-sm text-muted-foreground">
             Escolha uma forma de complementar sua entrega: envie um arquivo ou escreva um
             complemento em texto. Basta uma das duas.
           </p>
 
-          <div className="mt-6 rounded-2xl border border-border bg-card p-4 sm:p-6">
-            <div className="grid grid-cols-2 gap-1 rounded-xl bg-secondary p-1 sm:inline-flex">
+          <div className="mt-6 rounded-2xl border border-border bg-card p-6">
+            <div className="inline-flex rounded-xl bg-secondary p-1">
               {[
-
                 { v: "arquivo" as const, label: "Enviar arquivo" },
                 { v: "texto" as const, label: "Escrever complemento" },
               ].map((o) => (
