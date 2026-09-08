@@ -18,7 +18,7 @@ export const prepararAcesso = createServerFn({ method: "POST" })
 
     const { data: candidato } = await supabaseAdmin
       .from("candidatos")
-      .select("email, senha_inicial")
+      .select("email, senha_hash")
       .eq("email", email)
       .maybeSingle();
 
@@ -26,10 +26,21 @@ export const prepararAcesso = createServerFn({ method: "POST" })
       return { ok: false as const, motivo: "nao_autorizado" as const };
     }
 
+    // Só guardamos a impressão digital (hash) da senha inicial, nunca a senha em si.
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(data.senha));
+    const hash = Array.from(new Uint8Array(digest))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+
+    if (hash !== candidato.senha_hash) {
+      // Senha não confere com a inicial: pode ser uma conta já criada. Deixamos o login decidir.
+      return { ok: true as const };
+    }
+
     // A conta pode já existir (acessos seguintes). Nesse caso não fazemos nada.
     const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
       email,
-      password: candidato.senha_inicial,
+      password: data.senha,
       email_confirm: true,
     });
 
