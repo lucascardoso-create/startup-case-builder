@@ -260,6 +260,7 @@ function Painel() {
 
   return (
     <main className="min-h-screen bg-background pb-24">
+      <BarraContagem />
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-6 py-4">
           <div className="min-w-0">
