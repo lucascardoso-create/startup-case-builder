@@ -25,9 +25,9 @@ import {
   CONTATO,
   DRIVE_URL,
   PERGUNTAS,
-  PRAZO,
   PRAZO_LABEL,
 } from "@/lib/case";
+import { BarraContagem, useTempoRestante } from "@/components/contagem-regressiva";
 
 export const Route = createFileRoute("/_authenticated/painel")({
   ssr: false,
