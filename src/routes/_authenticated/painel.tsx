@@ -96,7 +96,7 @@ function Painel() {
   const [confirmado, setConfirmado] = useState<boolean[]>(CONFIRMACOES.map(() => false));
   const [modo, setModo] = useState<"arquivo" | "texto">("arquivo");
 
-  const prazoEncerrado = Date.now() > PRAZO.getTime();
+  const { encerrado: prazoEncerrado } = useTempoRestante();
   const bloqueado = prazoEncerrado;
 
   useEffect(() => {
