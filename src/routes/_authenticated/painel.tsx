@@ -119,7 +119,7 @@ function Painel() {
 
       if (!ativo) return;
       if (entrega) {
-        setForm({
+        const dados: Respostas = {
           q1: entrega.q1,
           q2: entrega.q2,
           q3: entrega.q3,
@@ -132,9 +132,14 @@ function Painel() {
           arquivo_nome: entrega.arquivo_nome,
           finalizada: entrega.finalizada,
           enviada_em: entrega.enviada_em,
-        });
+        };
+        setForm(dados);
+        referencia.current = JSON.stringify(dados);
+        if (entrega.updated_at) setSalvoEm(new Date(entrega.updated_at));
         if (!entrega.arquivo_path && entrega.link_complementar.trim()) setModo("texto");
         if (entrega.finalizada) setConfirmado(CONFIRMACOES.map(() => true));
+      } else {
+        referencia.current = JSON.stringify(VAZIO);
       }
       setCarregando(false);
     })();
@@ -157,10 +162,10 @@ function Painel() {
     return itens;
   }, [form]);
 
-  async function salvar(finalizar: boolean) {
+  async function salvar(finalizar: boolean, silencioso = false) {
     if (!userId) return;
     if (finalizar) setEnviando(true);
-    else setSalvando(true);
+    else if (!silencioso) setSalvando(true);
     try {
       const payload = {
         user_id: userId,
@@ -185,23 +190,59 @@ function Painel() {
 
       if (error) throw error;
 
+      referencia.current = JSON.stringify({
+        ...form,
+        link_complementar: payload.link_complementar,
+        finalizada: payload.finalizada,
+        enviada_em: payload.enviada_em,
+      });
       setForm((f) => ({
         ...f,
+        link_complementar: payload.link_complementar,
         finalizada: payload.finalizada,
         enviada_em: payload.enviada_em,
       }));
-      toast.success(
-        finalizar
-          ? "Entrega registrada! Você ainda pode revisar até " + PRAZO_LABEL + "."
-          : "Rascunho salvo.",
-      );
+      setSalvoEm(new Date());
+      setPendente(false);
+      if (!silencioso)
+        toast.success(
+          finalizar
+            ? "Entrega registrada! Você ainda pode revisar até " + PRAZO_LABEL + "."
+            : "Rascunho salvo.",
+        );
     } catch {
-      toast.error("Não foi possível salvar. Verifique sua conexão e tente novamente.");
+      if (!silencioso)
+        toast.error("Não foi possível salvar. Verifique sua conexão e tente novamente.");
     } finally {
       setSalvando(false);
       setEnviando(false);
     }
   }
+
+  // Salvamento automático do rascunho
+  useEffect(() => {
+    if (carregando || bloqueado || !userId) return;
+    if (JSON.stringify(form) === referencia.current) {
+      setPendente(false);
+      return;
+    }
+    setPendente(true);
+    const t = setTimeout(() => {
+      void salvar(false, true);
+    }, 1200);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form, carregando, bloqueado, userId]);
+
+  useEffect(() => {
+    if (!pendente) return;
+    const aviso = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", aviso);
+    return () => window.removeEventListener("beforeunload", aviso);
+  }, [pendente]);
 
   async function enviarArquivo(file: File) {
     if (!userId) return;
