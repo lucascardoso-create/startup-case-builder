@@ -647,7 +647,8 @@ function Painel() {
             </Button>
           </div>
           <p className="mt-4 text-xs text-muted-foreground">
-            Dúvidas ou problemas de acesso: {CONTATO}
+            Suas respostas são salvas sozinhas enquanto você escreve, e você reencontra a última
+            versão sempre que voltar. Dúvidas ou problemas de acesso: {CONTATO}
           </p>
         </section>
       </div>
