@@ -95,6 +95,9 @@ function Painel() {
   const [form, setForm] = useState<Respostas>(VAZIO);
   const [confirmado, setConfirmado] = useState<boolean[]>(CONFIRMACOES.map(() => false));
   const [modo, setModo] = useState<"arquivo" | "texto">("arquivo");
+  const [salvoEm, setSalvoEm] = useState<Date | null>(null);
+  const [pendente, setPendente] = useState(false);
+  const referencia = useRef<string>("");
 
   const { encerrado: prazoEncerrado } = useTempoRestante();
   const bloqueado = prazoEncerrado;
@@ -116,7 +119,7 @@ function Painel() {
 
       if (!ativo) return;
       if (entrega) {
-        setForm({
+        const dados: Respostas = {
           q1: entrega.q1,
           q2: entrega.q2,
           q3: entrega.q3,
@@ -129,9 +132,14 @@ function Painel() {
           arquivo_nome: entrega.arquivo_nome,
           finalizada: entrega.finalizada,
           enviada_em: entrega.enviada_em,
-        });
+        };
+        setForm(dados);
+        referencia.current = JSON.stringify(dados);
+        if (entrega.updated_at) setSalvoEm(new Date(entrega.updated_at));
         if (!entrega.arquivo_path && entrega.link_complementar.trim()) setModo("texto");
         if (entrega.finalizada) setConfirmado(CONFIRMACOES.map(() => true));
+      } else {
+        referencia.current = JSON.stringify(VAZIO);
       }
       setCarregando(false);
     })();
@@ -154,10 +162,10 @@ function Painel() {
     return itens;
   }, [form]);
 
-  async function salvar(finalizar: boolean) {
+  async function salvar(finalizar: boolean, silencioso = false) {
     if (!userId) return;
     if (finalizar) setEnviando(true);
-    else setSalvando(true);
+    else if (!silencioso) setSalvando(true);
     try {
       const payload = {
         user_id: userId,
@@ -182,23 +190,59 @@ function Painel() {
 
       if (error) throw error;
 
+      referencia.current = JSON.stringify({
+        ...form,
+        link_complementar: payload.link_complementar,
+        finalizada: payload.finalizada,
+        enviada_em: payload.enviada_em,
+      });
       setForm((f) => ({
         ...f,
+        link_complementar: payload.link_complementar,
         finalizada: payload.finalizada,
         enviada_em: payload.enviada_em,
       }));
-      toast.success(
-        finalizar
-          ? "Entrega registrada! Você ainda pode revisar até " + PRAZO_LABEL + "."
-          : "Rascunho salvo.",
-      );
+      setSalvoEm(new Date());
+      setPendente(false);
+      if (!silencioso)
+        toast.success(
+          finalizar
+            ? "Entrega registrada! Você ainda pode revisar até " + PRAZO_LABEL + "."
+            : "Rascunho salvo.",
+        );
     } catch {
-      toast.error("Não foi possível salvar. Verifique sua conexão e tente novamente.");
+      if (!silencioso)
+        toast.error("Não foi possível salvar. Verifique sua conexão e tente novamente.");
     } finally {
       setSalvando(false);
       setEnviando(false);
     }
   }
+
+  // Salvamento automático do rascunho
+  useEffect(() => {
+    if (carregando || bloqueado || !userId) return;
+    if (JSON.stringify(form) === referencia.current) {
+      setPendente(false);
+      return;
+    }
+    setPendente(true);
+    const t = setTimeout(() => {
+      void salvar(false, true);
+    }, 1200);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form, carregando, bloqueado, userId]);
+
+  useEffect(() => {
+    if (!pendente) return;
+    const aviso = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", aviso);
+    return () => window.removeEventListener("beforeunload", aviso);
+  }, [pendente]);
 
   async function enviarArquivo(file: File) {
     if (!userId) return;
@@ -267,9 +311,28 @@ function Painel() {
             <p className="font-display text-base">SanFran iLab</p>
             <p className="truncate text-xs text-muted-foreground">{email}</p>
           </div>
-          <Button variant="ghost" size="sm" onClick={sair}>
-            <LogOut className="mr-1 h-4 w-4" /> Sair
-          </Button>
+          <div className="flex items-center gap-3">
+            {!bloqueado && (
+              <span className="hidden items-center gap-1.5 text-xs text-muted-foreground sm:inline-flex">
+                {pendente ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" /> Salvando...
+                  </>
+                ) : salvoEm ? (
+                  <>
+                    <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Salvo automaticamente às{" "}
+                    {salvoEm.toLocaleTimeString("pt-BR", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </>
+                ) : null}
+              </span>
+            )}
+            <Button variant="ghost" size="sm" onClick={sair}>
+              <LogOut className="mr-1 h-4 w-4" /> Sair
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -584,7 +647,8 @@ function Painel() {
             </Button>
           </div>
           <p className="mt-4 text-xs text-muted-foreground">
-            Dúvidas ou problemas de acesso: {CONTATO}
+            Suas respostas são salvas sozinhas enquanto você escreve, e você reencontra a última
+            versão sempre que voltar. Dúvidas ou problemas de acesso: {CONTATO}
           </p>
         </section>
       </div>
