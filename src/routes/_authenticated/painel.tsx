@@ -95,6 +95,9 @@ function Painel() {
   const [form, setForm] = useState<Respostas>(VAZIO);
   const [confirmado, setConfirmado] = useState<boolean[]>(CONFIRMACOES.map(() => false));
   const [modo, setModo] = useState<"arquivo" | "texto">("arquivo");
+  const [salvoEm, setSalvoEm] = useState<Date | null>(null);
+  const [pendente, setPendente] = useState(false);
+  const referencia = useRef<string>("");
 
   const { encerrado: prazoEncerrado } = useTempoRestante();
   const bloqueado = prazoEncerrado;
