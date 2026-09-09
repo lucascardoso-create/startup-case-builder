@@ -1,7 +1,7 @@
 export const DRIVE_URL =
   "https://drive.google.com/drive/folders/17eJOtLW3E6e0SLHpC4QVEwg50cVBY_Aw?usp=sharing";
 
-export const CONTATO = "lucascardososilva@usp.br";
+export const CONTATO = "sanfran.ilab@gmail.com";
 
 /** Prazo final para edições: 20/09/2026, 23h59 (horário de Brasília). */
 export const PRAZO = new Date("2026-09-21T02:59:00Z");
