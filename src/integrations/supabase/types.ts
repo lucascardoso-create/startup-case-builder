@@ -18,17 +18,23 @@ export type Database = {
         Row: {
           created_at: string
           email: string
-          senha_hash: string
+          nome: string | null
+          senha: string | null
+          senha_hash: string | null
         }
         Insert: {
           created_at?: string
           email: string
-          senha_hash: string
+          nome?: string | null
+          senha?: string | null
+          senha_hash?: string | null
         }
         Update: {
           created_at?: string
           email?: string
-          senha_hash?: string
+          nome?: string | null
+          senha?: string | null
+          senha_hash?: string | null
         }
         Relationships: []
       }
