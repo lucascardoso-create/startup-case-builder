@@ -311,9 +311,28 @@ function Painel() {
             <p className="font-display text-base">SanFran iLab</p>
             <p className="truncate text-xs text-muted-foreground">{email}</p>
           </div>
-          <Button variant="ghost" size="sm" onClick={sair}>
-            <LogOut className="mr-1 h-4 w-4" /> Sair
-          </Button>
+          <div className="flex items-center gap-3">
+            {!bloqueado && (
+              <span className="hidden items-center gap-1.5 text-xs text-muted-foreground sm:inline-flex">
+                {pendente ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" /> Salvando...
+                  </>
+                ) : salvoEm ? (
+                  <>
+                    <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Salvo automaticamente às{" "}
+                    {salvoEm.toLocaleTimeString("pt-BR", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </>
+                ) : null}
+              </span>
+            )}
+            <Button variant="ghost" size="sm" onClick={sair}>
+              <LogOut className="mr-1 h-4 w-4" /> Sair
+            </Button>
+          </div>
         </div>
       </header>
 
