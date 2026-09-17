@@ -1,26 +1,15 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database } from "@/integrations/supabase/types";
 
-async function exigirAdmin(context: {
-  userId: string;
-  supabase: {
-    from: (table: "user_roles") => {
-      select: (columns: string) => {
-        eq: (column: string, value: string) => {
-          eq: (column: string, value: string) => {
-            maybeSingle: () => Promise<{ data: { role: string } | null; error: unknown }>;
-          };
-        };
-      };
-    };
-  };
-}) {
-  const { data, error } = await context.supabase
+async function exigirAdmin(userId: string, supabase: SupabaseClient<Database>) {
+  const { data, error } = await supabase
     .from("user_roles")
     .select("role")
-    .eq("user_id", context.userId)
+    .eq("user_id", userId)
     .eq("role", "admin")
     .maybeSingle();
 
@@ -30,14 +19,14 @@ async function exigirAdmin(context: {
 export const verificarAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await exigirAdmin(context);
+    await exigirAdmin(context.userId, context.supabase);
     return { admin: true };
   });
 
 export const listarResultados = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await exigirAdmin(context);
+    await exigirAdmin(context.userId, context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const [{ data: candidatos, error: erroCandidatos }, { data: entregas, error: erroEntregas }] =
@@ -65,7 +54,7 @@ export const obterArquivoAdmin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => z.object({ entregaId: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
-    await exigirAdmin(context);
+    await exigirAdmin(context.userId, context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: entrega, error } = await supabaseAdmin
       .from("entregas")
