@@ -1,4 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   CheckCircle2,
@@ -11,6 +12,7 @@ import {
   Save,
   Send,
   Trash2,
+  BarChart3,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -28,6 +30,7 @@ import {
   PRAZO_LABEL,
 } from "@/lib/case";
 import { BarraContagem, useTempoRestante } from "@/components/contagem-regressiva";
+import { verificarAdmin } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/painel")({
   ssr: false,
@@ -97,7 +100,9 @@ function Painel() {
   const [modo, setModo] = useState<"arquivo" | "texto">("arquivo");
   const [salvoEm, setSalvoEm] = useState<Date | null>(null);
   const [pendente, setPendente] = useState(false);
+  const [admin, setAdmin] = useState(false);
   const referencia = useRef<string>("");
+  const checarAdmin = useServerFn(verificarAdmin);
 
   const { encerrado: prazoEncerrado } = useTempoRestante();
   const bloqueado = prazoEncerrado;
@@ -147,6 +152,10 @@ function Painel() {
       ativo = false;
     };
   }, []);
+
+  useEffect(() => {
+    checarAdmin().then(() => setAdmin(true)).catch(() => setAdmin(false));
+  }, [checarAdmin]);
 
   const faltando = useMemo(() => {
     const itens: string[] = [];
@@ -312,6 +321,11 @@ function Painel() {
             <p className="truncate text-xs text-muted-foreground">{email}</p>
           </div>
           <div className="flex items-center gap-3">
+            {admin && (
+              <Button asChild variant="outline" size="sm">
+                <Link to="/resultados"><BarChart3 className="mr-1 h-4 w-4" /> Resultados</Link>
+              </Button>
+            )}
             {!bloqueado && (
               <span className="hidden items-center gap-1.5 text-xs text-muted-foreground sm:inline-flex">
                 {pendente ? (
