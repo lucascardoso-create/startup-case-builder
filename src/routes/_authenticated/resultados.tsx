@@ -6,12 +6,14 @@ import {
   CheckCircle2,
   Clock3,
   Download,
+  FileDown,
   FileText,
   Loader2,
   LogOut,
   Search,
   Users,
 } from "lucide-react";
+
 import { toast } from "sonner";
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -94,6 +96,83 @@ function Resultados() {
     });
   }, [busca, filtro, resultados]);
 
+  function baixar(nomeArquivo: string, conteudo: string, tipo: string) {
+    const url = URL.createObjectURL(new Blob([conteudo], { type: tipo }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = nomeArquivo;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportarJson() {
+    const dados = visiveis.map((item) => ({
+      nome: item.nome,
+      email: item.email,
+      situacao: item.entrega?.finalizada ? "finalizado" : item.entrega ? "rascunho" : "sem_resposta",
+      atualizado_em: item.entrega?.updated_at ?? null,
+      enviado_em: item.entrega?.enviada_em ?? null,
+      usou_ia: item.entrega?.usou_ia ?? null,
+      detalhes_ia: item.entrega?.ia_detalhes ?? "",
+      complemento: item.entrega?.link_complementar ?? "",
+      arquivo: item.entrega?.arquivo_nome ?? null,
+      respostas: PERGUNTAS.map((pergunta) => ({
+        etapa: pergunta.etapa,
+        pergunta: pergunta.titulo,
+        enunciado: pergunta.enunciado,
+        resposta: item.entrega?.[pergunta.id] ?? "",
+      })),
+    }));
+    baixar(
+      `resultados-sanfran-ilab-${new Date().toISOString().slice(0, 10)}.json`,
+      JSON.stringify({ gerado_em: new Date().toISOString(), candidatos: dados }, null, 2),
+      "application/json",
+    );
+    toast.success("Arquivo exportado para análise.");
+  }
+
+  function exportarCsv() {
+    const escapar = (valor: unknown) => `"${String(valor ?? "").replace(/"/g, '""')}"`;
+    const cabecalho = [
+      "nome",
+      "email",
+      "situacao",
+      "atualizado_em",
+      "enviado_em",
+      "usou_ia",
+      "detalhes_ia",
+      "complemento",
+      "arquivo",
+      ...PERGUNTAS.map((pergunta) => pergunta.etapa),
+    ];
+    const linhas = visiveis.map((item) =>
+      [
+        item.nome,
+        item.email,
+        item.entrega?.finalizada ? "finalizado" : item.entrega ? "rascunho" : "sem_resposta",
+        item.entrega?.updated_at ?? "",
+        item.entrega?.enviada_em ?? "",
+        item.entrega?.usou_ia === null || item.entrega?.usou_ia === undefined
+          ? ""
+          : item.entrega.usou_ia
+            ? "sim"
+            : "nao",
+        item.entrega?.ia_detalhes ?? "",
+        item.entrega?.link_complementar ?? "",
+        item.entrega?.arquivo_nome ?? "",
+        ...PERGUNTAS.map((pergunta) => item.entrega?.[pergunta.id] ?? ""),
+      ]
+        .map(escapar)
+        .join(","),
+    );
+    baixar(
+      `resultados-sanfran-ilab-${new Date().toISOString().slice(0, 10)}.csv`,
+      [cabecalho.map(escapar).join(","), ...linhas].join("\n"),
+      "text/csv;charset=utf-8",
+    );
+    toast.success("Planilha exportada para análise.");
+  }
+
   async function onAbrirArquivo(entregaId: string) {
     setArquivoAbrindo(entregaId);
     try {
@@ -110,6 +189,7 @@ function Resultados() {
     await supabase.auth.signOut();
     navigate({ to: "/entrar", replace: true });
   }
+
 
   if (carregando) {
     return <main className="grid min-h-screen place-items-center bg-background"><Loader2 className="h-7 w-7 animate-spin text-primary" /></main>;
@@ -131,11 +211,22 @@ function Resultados() {
       </header>
 
       <div className="mx-auto max-w-6xl px-6 pt-10">
-        <div>
-          <p className="text-sm font-bold uppercase text-primary">Acompanhamento privado</p>
-          <h1 className="mt-2 text-4xl uppercase">Resultados da segunda fase</h1>
-          <p className="mt-3 max-w-2xl text-muted-foreground">Consulte o progresso, as respostas e os materiais enviados pelos candidatos.</p>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-sm font-bold uppercase text-primary">Acompanhamento privado</p>
+            <h1 className="mt-2 text-4xl uppercase">Resultados da segunda fase</h1>
+            <p className="mt-3 max-w-2xl text-muted-foreground">Consulte o progresso, as respostas e os materiais enviados pelos candidatos.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={exportarJson} disabled={visiveis.length === 0}>
+              <FileDown className="mr-1 h-4 w-4" /> Exportar para IA (JSON)
+            </Button>
+            <Button variant="outline" onClick={exportarCsv} disabled={visiveis.length === 0}>
+              <FileDown className="mr-1 h-4 w-4" /> Exportar planilha (CSV)
+            </Button>
+          </div>
         </div>
+
 
         <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
