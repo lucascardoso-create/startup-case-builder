@@ -96,6 +96,83 @@ function Resultados() {
     });
   }, [busca, filtro, resultados]);
 
+  function baixar(nomeArquivo: string, conteudo: string, tipo: string) {
+    const url = URL.createObjectURL(new Blob([conteudo], { type: tipo }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = nomeArquivo;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportarJson() {
+    const dados = visiveis.map((item) => ({
+      nome: item.nome,
+      email: item.email,
+      situacao: item.entrega?.finalizada ? "finalizado" : item.entrega ? "rascunho" : "sem_resposta",
+      atualizado_em: item.entrega?.updated_at ?? null,
+      enviado_em: item.entrega?.enviada_em ?? null,
+      usou_ia: item.entrega?.usou_ia ?? null,
+      detalhes_ia: item.entrega?.ia_detalhes ?? "",
+      complemento: item.entrega?.link_complementar ?? "",
+      arquivo: item.entrega?.arquivo_nome ?? null,
+      respostas: PERGUNTAS.map((pergunta) => ({
+        etapa: pergunta.etapa,
+        pergunta: pergunta.titulo,
+        enunciado: pergunta.enunciado,
+        resposta: item.entrega?.[pergunta.id] ?? "",
+      })),
+    }));
+    baixar(
+      `resultados-sanfran-ilab-${new Date().toISOString().slice(0, 10)}.json`,
+      JSON.stringify({ gerado_em: new Date().toISOString(), candidatos: dados }, null, 2),
+      "application/json",
+    );
+    toast.success("Arquivo exportado para análise.");
+  }
+
+  function exportarCsv() {
+    const escapar = (valor: unknown) => `"${String(valor ?? "").replace(/"/g, '""')}"`;
+    const cabecalho = [
+      "nome",
+      "email",
+      "situacao",
+      "atualizado_em",
+      "enviado_em",
+      "usou_ia",
+      "detalhes_ia",
+      "complemento",
+      "arquivo",
+      ...PERGUNTAS.map((pergunta) => pergunta.etapa),
+    ];
+    const linhas = visiveis.map((item) =>
+      [
+        item.nome,
+        item.email,
+        item.entrega?.finalizada ? "finalizado" : item.entrega ? "rascunho" : "sem_resposta",
+        item.entrega?.updated_at ?? "",
+        item.entrega?.enviada_em ?? "",
+        item.entrega?.usou_ia === null || item.entrega?.usou_ia === undefined
+          ? ""
+          : item.entrega.usou_ia
+            ? "sim"
+            : "nao",
+        item.entrega?.ia_detalhes ?? "",
+        item.entrega?.link_complementar ?? "",
+        item.entrega?.arquivo_nome ?? "",
+        ...PERGUNTAS.map((pergunta) => item.entrega?.[pergunta.id] ?? ""),
+      ]
+        .map(escapar)
+        .join(","),
+    );
+    baixar(
+      `resultados-sanfran-ilab-${new Date().toISOString().slice(0, 10)}.csv`,
+      [cabecalho.map(escapar).join(","), ...linhas].join("\n"),
+      "text/csv;charset=utf-8",
+    );
+    toast.success("Planilha exportada para análise.");
+  }
+
   async function onAbrirArquivo(entregaId: string) {
     setArquivoAbrindo(entregaId);
     try {
@@ -112,6 +189,7 @@ function Resultados() {
     await supabase.auth.signOut();
     navigate({ to: "/entrar", replace: true });
   }
+
 
   if (carregando) {
     return <main className="grid min-h-screen place-items-center bg-background"><Loader2 className="h-7 w-7 animate-spin text-primary" /></main>;
