@@ -211,11 +211,22 @@ function Resultados() {
       </header>
 
       <div className="mx-auto max-w-6xl px-6 pt-10">
-        <div>
-          <p className="text-sm font-bold uppercase text-primary">Acompanhamento privado</p>
-          <h1 className="mt-2 text-4xl uppercase">Resultados da segunda fase</h1>
-          <p className="mt-3 max-w-2xl text-muted-foreground">Consulte o progresso, as respostas e os materiais enviados pelos candidatos.</p>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-sm font-bold uppercase text-primary">Acompanhamento privado</p>
+            <h1 className="mt-2 text-4xl uppercase">Resultados da segunda fase</h1>
+            <p className="mt-3 max-w-2xl text-muted-foreground">Consulte o progresso, as respostas e os materiais enviados pelos candidatos.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={exportarJson} disabled={visiveis.length === 0}>
+              <FileDown className="mr-1 h-4 w-4" /> Exportar para IA (JSON)
+            </Button>
+            <Button variant="outline" onClick={exportarCsv} disabled={visiveis.length === 0}>
+              <FileDown className="mr-1 h-4 w-4" /> Exportar planilha (CSV)
+            </Button>
+          </div>
         </div>
+
 
         <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
