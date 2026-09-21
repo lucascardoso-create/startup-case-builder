@@ -4,5 +4,5 @@
 - [x] Proteger consultas e arquivos no servidor contra acesso por candidatos comuns.
 - [x] Exibir respostas, situação, datas, complementos e arquivos enviados.
 - [x] Validar acesso administrativo e negar acesso por conta comum ou chamada direta.
-- [ ] Adicionar exportação dos resultados para análise por agente de IA.
+- [x] Adicionar exportação dos resultados para análise por agente de IA.
 - [ ] Melhorar a experiência mobile (pedido adiado pelo usuário).
