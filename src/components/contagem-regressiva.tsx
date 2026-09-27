@@ -3,13 +3,14 @@ import { Clock } from "lucide-react";
 
 import { PRAZO, PRAZO_LABEL } from "@/lib/case";
 
-export function useTempoRestante() {
-  const [restante, setRestante] = useState(() => PRAZO.getTime() - Date.now());
+export function useTempoRestante(prazo: Date = PRAZO) {
+  const [restante, setRestante] = useState(() => prazo.getTime() - Date.now());
 
   useEffect(() => {
-    const id = setInterval(() => setRestante(PRAZO.getTime() - Date.now()), 1000);
+    const id = setInterval(() => setRestante(prazo.getTime() - Date.now()), 1000);
+    setRestante(prazo.getTime() - Date.now());
     return () => clearInterval(id);
-  }, []);
+  }, [prazo]);
 
   const encerrado = restante <= 0;
   const total = Math.max(restante, 0);
@@ -31,8 +32,8 @@ function Bloco({ valor, rotulo }: { valor: number; rotulo: string }) {
   );
 }
 
-export function BarraContagem() {
-  const { encerrado, horas, minutos, segundos } = useTempoRestante();
+export function BarraContagem({ prazo = PRAZO, label = PRAZO_LABEL }: { prazo?: Date; label?: string } = {}) {
+  const { encerrado, horas, minutos, segundos } = useTempoRestante(prazo);
 
   return (
     <div className="bg-primary text-primary-foreground">
@@ -41,8 +42,8 @@ export function BarraContagem() {
           <Clock className="h-5 w-5 shrink-0" />
           <p className="text-sm font-medium">
             {encerrado
-              ? `As entregas foram encerradas em ${PRAZO_LABEL}.`
-              : `Tempo restante para enviar sua entrega · prazo final ${PRAZO_LABEL}`}
+              ? `As entregas foram encerradas em ${label}.`
+              : `Tempo restante para enviar sua entrega · prazo final ${label}`}
           </p>
         </div>
         {!encerrado && (
