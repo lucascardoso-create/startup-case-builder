@@ -127,7 +127,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      meu_prazo: { Args: never; Returns: string }
+      [_ in never]: never
     }
     Enums: {
       app_role: "admin" | "user"
