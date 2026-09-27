@@ -27,8 +27,10 @@ import {
   CONTATO,
   DRIVE_URL,
   PERGUNTAS,
-  PRAZO_LABEL,
+  PRAZO,
+  PRAZO_LABEL as PRAZO_LABEL_PADRAO,
 } from "@/lib/case";
+import { obterMeuPrazo } from "@/lib/prazo.functions";
 import { BarraContagem, useTempoRestante } from "@/components/contagem-regressiva";
 import { verificarAdmin } from "@/lib/admin.functions";
 
@@ -104,7 +106,18 @@ function Painel() {
   const referencia = useRef<string>("");
   const checarAdmin = useServerFn(verificarAdmin);
 
-  const { encerrado: prazoEncerrado } = useTempoRestante();
+  const buscarPrazo = useServerFn(obterMeuPrazo);
+  const [prazo, setPrazo] = useState<Date>(PRAZO);
+  useEffect(() => {
+    buscarPrazo()
+      .then((r) => setPrazo(new Date(r.prazo)))
+      .catch(() => {});
+  }, [buscarPrazo]);
+  const PRAZO_LABEL =
+    prazo.getTime() === PRAZO.getTime()
+      ? PRAZO_LABEL_PADRAO
+      : prazo.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }).replace(" ", " ").replace(":", "h");
+  const { encerrado: prazoEncerrado } = useTempoRestante(prazo);
   const bloqueado = prazoEncerrado;
 
   useEffect(() => {
@@ -313,7 +326,7 @@ function Painel() {
 
   return (
     <main className="min-h-screen bg-background pb-24">
-      <BarraContagem />
+      <BarraContagem prazo={prazo} label={PRAZO_LABEL} />
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-6 py-4">
           <div className="min-w-0">
